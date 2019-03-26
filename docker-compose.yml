@@ -1,28 +1,12 @@
 version: "2.2"
 services:
-  slides:
-    build:
-      dockerfile: slides.Dockerfile
-      context: .
-    volumes:
-      - "$PWD/slides.md:/app/slides.md"
-    ports:
-      - 8000:8000
   database:
-    image: postgres
-  webapp:
-    build:
-      context: .
-    ports:
-      - 80:8000
-    entrypoint: python
-    command:
-      - "manage.py"
-      - "runserver"
-      - "0.0.0.0:8000"
+    image: postgres:11-alpine
+    volumes:
+      - "$PWD/.dbdata:/var/lib/postgresql/data"
   jaeger:
     image: jaegertracing/all-in-one:1.6
-    env:
+    environment:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
     ports:
       - 5775:5775/udp
@@ -32,3 +16,39 @@ services:
       - 8080:16686
       - 14268:14268
       - 9411:9411
+  django:
+    build:
+      context: .
+    entrypoint: python
+    volumes:
+      - "$PWD/app:/app"
+    working_dir: /app
+    command:
+      - "-m"
+      - django
+      - "--version"
+  slides:
+    build:
+      dockerfile: slides.Dockerfile
+      context: .
+    volumes:
+      - "$PWD/slides.md:/app/slides.md"
+    ports:
+      - 8000:8000
+  init-webapp:
+    extends: django
+    entrypoint: sh
+    command:
+      - "-c"
+      - "django-admin startapp simple_poll_app ."
+  run-webapp:
+    depends_on:
+      - jaeger
+      - database
+    extends: django
+    ports:
+      - 80:8000
+    command:
+      - manage.py
+      - runserver
+      - 0.0.0.0:8000

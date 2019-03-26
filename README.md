@@ -11,6 +11,6 @@ your favorite browser and visit `http://localhost:8000`.
 
 ## Demo
 
-1. Start the Django stack: `docker-compose up -d`
+1. Start the Django stack: `docker-compose up -d run-webapp`
 2. View the Jaeger console: `http://localhost:8080`
 3. View the app: `http://localhost`
