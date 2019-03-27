@@ -2,15 +2,13 @@
 
 A repo for learning how to use Jaeger with a simple Django polling app.
 
-# How to run
+# How to run the demo
 
-## Slides
-
-Run `docker-compose up slides` to start `reveal-md`. To view the slides, open
-your favorite browser and visit `http://localhost:8000`.
-
-## Demo
-
-1. Start the Django stack: `docker-compose up -d run-webapp`
+1. Start the Django stack: `scripts/start-app`
 2. View the Jaeger console: `http://localhost:8080`
 3. View the app: `http://localhost`
+
+# Viewing the slides
+
+1. Start the slides: `docker-compose up -d slides`
+2. View the slides: `http://localhost:8000`. (NOTE: `$PWD/slides.md` must be present.)

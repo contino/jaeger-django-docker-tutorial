@@ -2,26 +2,52 @@ version: "2.2"
 services:
   database:
     image: postgres:11-alpine
+    environment:
+      POSTGRES_USER: polls
+      POSTGRES_PASSWORD: polls
+      POSTGRES_DB: polls_app
     volumes:
       - "$PWD/.dbdata:/var/lib/postgresql/data"
+    ports:
+      - 5432
   jaeger:
     image: jaegertracing/all-in-one:1.6
     environment:
       COLLECTOR_ZIPKIN_HTTP_PORT: 9411
     ports:
-      - 5775:5775/udp
-      - 6831:6831/udp
-      - 6832:6832/udp
-      - 5778:5778
       - 8080:16686
-      - 14268:14268
-      - 9411:9411
+      - 5775/udp
+      - 6831/udp
+      - 6832/udp
+      - 5778
+      - 14268
+      - 9411
   django:
     build:
       context: .
     entrypoint: python
+    environment:
+      DJANGO_DEBUG_MODE: "true"
+      DJANGO_SETTINGS_MODULE: website.settings
+      SECRET_KEY: supersecret # don't do this in prod!
+      TIME_ZONE: UTC
+      DATABASE_NAME: polls_app
+      DATABASE_USER: polls
+      DATABASE_PASSWORD: polls
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+
+      # The Jaeger documentation is complete garbage.
+      # The only way I could find these environment variables is from searching
+      # the jaeger-python-client codebase and looking for references to
+      # `os.getenv(<str>)`.
+
+      JAEGER_AGENT_PORT: 6831
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_SAMPLING_PORT: 5778
     volumes:
       - "$PWD/app:/app"
+      - "$PWD/conf:/conf"
     working_dir: /app
     command:
       - "-m"
@@ -35,17 +61,13 @@ services:
       - "$PWD/slides.md:/app/slides.md"
     ports:
       - 8000:8000
-  init-webapp:
-    extends: django
-    entrypoint: sh
-    command:
-      - "-c"
-      - "django-admin startapp simple_poll_app ."
-  run-webapp:
+  webapp:
     depends_on:
       - jaeger
       - database
     extends: django
+    environment:
+      JAEGER_SERVICE_NAME: polls_app
     ports:
       - 80:8000
     command:
