@@ -1,5 +1,16 @@
 version: "2.2"
 services:
+  generate-website-configs:
+    image: hairyhenderson/gomplate
+    env_file: .env
+    volumes:
+      - "$PWD/conf:/conf"
+    working_dir: /conf
+    command:
+      - "--file"
+      - website.yaml.tmpl
+      - "--out"
+      - website.yaml
   database:
     image: postgres:11-alpine
     environment:
@@ -26,25 +37,7 @@ services:
     build:
       context: .
     entrypoint: python
-    environment:
-      DJANGO_DEBUG_MODE: "true"
-      DJANGO_SETTINGS_MODULE: website.settings
-      SECRET_KEY: supersecret # don't do this in prod!
-      TIME_ZONE: UTC
-      DATABASE_NAME: polls_app
-      DATABASE_USER: polls
-      DATABASE_PASSWORD: polls
-      DATABASE_HOST: database
-      DATABASE_PORT: 5432
-
-      # The Jaeger documentation is complete garbage.
-      # The only way I could find these environment variables is from searching
-      # the jaeger-python-client codebase and looking for references to
-      # `os.getenv(<str>)`.
-
-      JAEGER_AGENT_PORT: 6831
-      JAEGER_AGENT_HOST: jaeger
-      JAEGER_SAMPLING_PORT: 5778
+    env_file: .env
     volumes:
       - "$PWD/app:/app"
       - "$PWD/conf:/conf"
@@ -53,6 +46,17 @@ services:
       - "-m"
       - django
       - "--version"
+  website:
+    depends_on:
+      - jaeger
+      - database
+    extends: django
+    ports:
+      - 80:8000
+    command:
+      - manage.py
+      - runserver
+      - 0.0.0.0:8000
   slides:
     build:
       dockerfile: slides.Dockerfile
@@ -61,16 +65,3 @@ services:
       - "$PWD/slides.md:/app/slides.md"
     ports:
       - 8000:8000
-  webapp:
-    depends_on:
-      - jaeger
-      - database
-    extends: django
-    environment:
-      JAEGER_SERVICE_NAME: polls_app
-    ports:
-      - 80:8000
-    command:
-      - manage.py
-      - runserver
-      - 0.0.0.0:8000

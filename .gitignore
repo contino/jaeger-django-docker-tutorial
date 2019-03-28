@@ -2,3 +2,6 @@
 *__pycache__*
 db.sqlite3
 app/**/migrations/
+.env
+.env.*
+!.env.example

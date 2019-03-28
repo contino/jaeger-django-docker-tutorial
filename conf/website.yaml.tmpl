@@ -1,0 +1,41 @@
+SECRET_KEY: "{{ .Env.SECRET_KEY }}"
+DEBUG: "{{ .Env.DJANGO_DEBUG_MODE }}"
+ALLOWED_HOSTS: "{{ getenv ALLOWED_HOSTS [] }}"
+ROOT_URLCONF: "website.urls"
+INSTALLED_APPS:
+    - "django_opentracing",
+    - "polls.apps.PollsConfig",
+    - "django.contrib.admin",
+    - "django.contrib.auth",
+    - "django.contrib.contenttypes",
+    - "django.contrib.sessions",
+    - "django.contrib.messages",
+    - "django.contrib.staticfiles",
+MIDDLEWARE:
+    - "django_opentracing.OpenTracingMiddleware",
+    - "django.middleware.security.SecurityMiddleware",
+    - "django.contrib.sessions.middleware.SessionMiddleware",
+    - "django.middleware.common.CommonMiddleware",
+    - "django.middleware.csrf.CsrfViewMiddleware",
+    - "django.contrib.auth.middleware.AuthenticationMiddleware",
+    - "django.contrib.messages.middleware.MessageMiddleware",
+    - "django.middleware.clickjacking.XFrameOptionsMiddleware",
+LANGUAGE_CODE: "en-us"
+TIME_ZONE: "UTC"
+USE_I18N: true
+USE_L10N: true
+USE_TZ: true
+STATIC_URL: "/static/"
+OPENTRACING_TRACE_ALL: true
+OPENTRACING_TRACED_ATTRIBUTES:
+  - "path"
+  - "method"
+OPENTRACING_TRACER_CALLABLE: 'website.tracing.tracer'
+DATABASES:
+  - default:
+      ENGINE: "{{ getenv "DATABASE_ENGINE" "django.db.backends.postgresql_psycopg2" }}"
+      NAME: "{{ .Env.DATABASE_NAME }}"
+      USER: "{{ .Env.DATABASE_USER }}"
+      PASSWORD: "{{ .Env.DATABASE_PASSWORD }}"
+      HOST: "{{ .Env.DATABASE_HOST }}"
+      PORT: "{{ .Env.DATABASE_PORT }}"
