@@ -13,8 +13,8 @@ def wait_for_database_or_raise(database_host, database_port, retry_limit_seconds
         if is_database_available(database_host, int(database_port)):
             return True
 
-        print("Waiting for DB at %s:%d (attempt %d of %d)" % (database_host, database_port, attempt,
-                                                              retry_limit_seconds))
+        print("Waiting for DB at %s:%d (attempt %d of %d)" % (database_host, int(database_port),
+                                                              attempt, retry_limit_seconds))
         time.sleep(1)
 
     return False
