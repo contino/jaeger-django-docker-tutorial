@@ -1,25 +1,25 @@
 SECRET_KEY: "{{ .Env.SECRET_KEY }}"
 DEBUG: "{{ .Env.DJANGO_DEBUG_MODE }}"
-ALLOWED_HOSTS: "{{ getenv ALLOWED_HOSTS [] }}"
+ALLOWED_HOSTS: {{ (getenv "ALLOWED_HOSTS" "[]" | yamlArray) }}
 ROOT_URLCONF: "website.urls"
 INSTALLED_APPS:
-    - "django_opentracing",
-    - "polls.apps.PollsConfig",
-    - "django.contrib.admin",
-    - "django.contrib.auth",
-    - "django.contrib.contenttypes",
-    - "django.contrib.sessions",
-    - "django.contrib.messages",
-    - "django.contrib.staticfiles",
+    - "django_opentracing"
+    - "polls.apps.PollsConfig"
+    - "django.contrib.admin"
+    - "django.contrib.auth"
+    - "django.contrib.contenttypes"
+    - "django.contrib.sessions"
+    - "django.contrib.messages"
+    - "django.contrib.staticfiles"
 MIDDLEWARE:
-    - "django_opentracing.OpenTracingMiddleware",
-    - "django.middleware.security.SecurityMiddleware",
-    - "django.contrib.sessions.middleware.SessionMiddleware",
-    - "django.middleware.common.CommonMiddleware",
-    - "django.middleware.csrf.CsrfViewMiddleware",
-    - "django.contrib.auth.middleware.AuthenticationMiddleware",
-    - "django.contrib.messages.middleware.MessageMiddleware",
-    - "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    - "django_opentracing.OpenTracingMiddleware"
+    - "django.middleware.security.SecurityMiddleware"
+    - "django.contrib.sessions.middleware.SessionMiddleware"
+    - "django.middleware.common.CommonMiddleware"
+    - "django.middleware.csrf.CsrfViewMiddleware"
+    - "django.contrib.auth.middleware.AuthenticationMiddleware"
+    - "django.contrib.messages.middleware.MessageMiddleware"
+    - "django.middleware.clickjacking.XFrameOptionsMiddleware"
 LANGUAGE_CODE: "en-us"
 TIME_ZONE: "UTC"
 USE_I18N: true
@@ -30,12 +30,16 @@ OPENTRACING_TRACE_ALL: true
 OPENTRACING_TRACED_ATTRIBUTES:
   - "path"
   - "method"
+  - "status_code"
 OPENTRACING_TRACER_CALLABLE: 'website.tracing.tracer'
 DATABASES:
-  - default:
-      ENGINE: "{{ getenv "DATABASE_ENGINE" "django.db.backends.postgresql_psycopg2" }}"
-      NAME: "{{ .Env.DATABASE_NAME }}"
-      USER: "{{ .Env.DATABASE_USER }}"
-      PASSWORD: "{{ .Env.DATABASE_PASSWORD }}"
-      HOST: "{{ .Env.DATABASE_HOST }}"
-      PORT: "{{ .Env.DATABASE_PORT }}"
+  default:
+    ENGINE: "{{ getenv "DATABASE_ENGINE" "django.db.backends.postgresql_psycopg2" }}"
+    NAME: "{{ .Env.DATABASE_NAME }}"
+    USER: "{{ .Env.DATABASE_USER }}"
+    PASSWORD: "{{ .Env.DATABASE_PASSWORD }}"
+    HOST: "{{ .Env.DATABASE_HOST }}"
+    PORT: "{{ .Env.DATABASE_PORT }}"
+JAEGER_AGENT_HOST: "{{ .Env.JAEGER_AGENT_HOST }}"
+JAEGER_AGENT_PORT: "{{ .Env.JAEGER_AGENT_PORT }}"
+JAEGER_SERVICE_NAME: "{{ .Env.JAEGER_SERVICE_NAME }}"

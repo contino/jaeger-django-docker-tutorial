@@ -48,6 +48,7 @@ services:
       - "--version"
   website:
     depends_on:
+      - generate-website-configs
       - jaeger
       - database
     extends: django

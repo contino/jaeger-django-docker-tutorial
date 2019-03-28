@@ -5,3 +5,4 @@ app/**/migrations/
 .env
 .env.*
 !.env.example
+conf/website.yaml

@@ -10,8 +10,7 @@ For the full list of and their values, see
 https://docs.djangoproject.com/en/2.1/ref/
 """
 
-import os, yaml
-from jaeger_client import Config
+import os, yaml, time
 from . import database, tracing
 from django.core.exceptions import ImproperlyConfigured
 
@@ -27,30 +26,30 @@ def get_from_django_config(key):
         return value
     except KeyError:
         raise ImproperlyConfigured("Please define Django configuration parameter: " + key)
+    except NameError:
+        return None
+
+
+def wait_for_config_file():
+    max_attempts = 60
+    for attempt in range(0, max_attempts):
+        file = os.getenv("DJANGO_CONFIGURATION_FILE")
+        if os.path.isfile(file):
+            return
+        if attempt == max_attempts:
+            raise TimeoutError("Timed out while waiting for config to become available.")
+        print("Waiting for " + file + " to become available...")
+        time.sleep(1)
 
 
 def initialize_config():
-    def wait_for_config_file():
-        max_attempts = 60
-        for attempt in range(0, max_attempts):
-            file = os.getenv("DJANGO_CONFIGURATION_FILE")
-            if os.path.isfile(file):
-                return
-            if attempt == max_attempts:
-                raise TimeoutError("Timed out while waiting for config to become available.")
-            print("Waiting for " + file + " to become available...")
-
-    self.wait_for_config_file()
-    with open(os.getenv("DJANGO_CONFIGURATION_FILE")) as config_file:
-        return yaml.loads(config_file.read())
+    wait_for_config_file()
+    file_location = os.getenv("DJANGO_CONFIGURATION_FILE")
+    with open(file_location) as config_file:
+        return yaml.load(config_file.read())
 
 
-wait_for_database(
-    database_host=get_from_django_config('DATABASES')['default']['HOST'],
-    database_port=get_from_django_config('DATABASES')['default']['PORT'],
-)
 django_configs = initialize_config()
-
 for django_config_key in [
         'SECRET_KEY',
         'DEBUG',
@@ -68,8 +67,16 @@ for django_config_key in [
         'OPENTRACING_TRACED_ATTRIBUTES',
         'OPENTRACING_TRACER_CALLABLE',
         'DATABASES',
+        'JAEGER_SERVICE_NAME',
+        'JAEGER_AGENT_HOST',
+        'JAEGER_AGENT_PORT',
 ]:
     locals()[django_config_key] = get_from_django_config(django_config_key)
+
+database.wait_for_database_or_raise(
+    database_host=DATABASES['default']['HOST'],
+    database_port=DATABASES['default']['PORT'],
+)
 
 TEMPLATES = [
     {
