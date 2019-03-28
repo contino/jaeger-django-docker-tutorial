@@ -1,7 +1,4 @@
-import os
-import socket
-import time
-import django.conf as conf
+import os, socket, time
 
 
 def is_database_available(database_host, database_port):
@@ -21,24 +18,3 @@ def wait_for_database(database_host, database_port, retry_limit_seconds=60):
         time.sleep(1)
 
     return False
-
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-
-def configure_database():
-    conf.settings.DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-        }
-    }
-
-    for env_var in ['NAME', 'USER', 'PASSWORD', 'HOST', 'PORT']:
-        env_var_to_get = 'DATABASE_' + env_var
-        if env_var_to_get not in os.environ:
-            raise NameError("Please define %s in your environment." % env_var_to_get)
-
-        conf.settings.DATABASES['default'][env_var] = os.getenv('DATABASE_' + env_var)
-    if not wait_for_database(os.getenv('DATABASE_HOST'), int(os.getenv('DATABASE_PORT'))):
-        raise TimeoutError("Unable to connect to the database.")

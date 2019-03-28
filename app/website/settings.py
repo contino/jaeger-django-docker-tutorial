@@ -45,7 +45,10 @@ def initialize_config():
         return yaml.loads(config_file.read())
 
 
-wait_for_database()
+wait_for_database(
+    database_host=get_from_django_config('DATABASES')['default']['HOST'],
+    database_port=get_from_django_config('DATABASES')['default']['PORT'],
+)
 django_configs = initialize_config()
 
 for django_config_key in [
