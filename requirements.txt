@@ -1,0 +1,5 @@
+django
+psycopg2
+django_opentracing
+pyyaml
+git+https://github.com/mihau/jaeger-client-python@feature/opentracing-2.0-support#egg=jaeger-client
