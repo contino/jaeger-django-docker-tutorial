@@ -4,4 +4,4 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 RUN npm install -g reveal-md && mkdir /app
 WORKDIR /app
-ENTRYPOINT [ "reveal-md", "/app/slides.md", "--port", "8000", "--disable-auto-open" ]
+ENTRYPOINT [ "reveal-md", "/app/slides.md", "--css", "assets/css/style.css", "--port", "8000", "--disable-auto-open" ]

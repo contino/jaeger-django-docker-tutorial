@@ -4,17 +4,17 @@ separator: <!--s-->
 verticalSeparator: <!--v-->
 ---
 
-### Plugging Performance Holes with Distributed Tracing
+#### Plugging Performance Holes with Distributed Tracing
 
 **Carlos Nunez**
 
 *2019 April 3*
 
----
+<!--s-->
 
-## Web app hotspots are hard
+### Web app hotspots are hard
 
-<!-- .slide: data-background=./assets/images/traffic.jpg -->
+<!-- .slide: data-background="./assets/images/traffic.jpg" data-state="dim-background" -->
 
 Note: You have a web application that _mostly_ performs well. When it doesn't perform well,
 however, you're not sure where to begin. You have a bunch of logs from your web server and backing
@@ -23,9 +23,9 @@ services and a lot of data points to reference, but finding hotspots is still di
 
 <!--s-->
 
-<!-- .slide: data-background=./assets/images/tracks.png -->
+<!-- .slide: data-background="./assets/images/tracks.jpg" data-state="dim-background" -->
 
-## Tracing finds hotspots.
+### Tracing finds hotspots.
 
 Note: Tracing helps here. Much like how system administrators would find slow syscalls with `strace`,
 tracing platforms plug into running services and collect information about how long _things_ take
@@ -35,7 +35,7 @@ over time. This way, you can find and alert on interesting slowdowns as they occ
 
 ## Talk Goals
 
-![](./assets/images/goals.png)
+![](./assets/images/goals.jpg)
 
 * What's Tracing?
 * How does it work?
@@ -46,7 +46,7 @@ over time. This way, you can find and alert on interesting slowdowns as they occ
 
 <!--s-->
 
-# What's Tracing?
+## What's Tracing?
 
 From [the OpenTracing project](https://opentracing.io/docs/overview/what-is-tracing/)
 
@@ -60,27 +60,34 @@ network calls such as request times and timestamps.
 
 <!--s-->
 
-# What Tracing *Is Not*
+## What Tracing *Is Not*
 
-* Tracing is *not* logging (though it can supplement interesting logs)
-* Tracing is *not* performance monitoring (though it helps)
-* Tracing is *not* monitoring (though it's a component of it)
+<div style="text-align: center">
+  <div style="float: left; width: 33%">
+  ![](./assets/images/not-monitoring.png)
+  <p>An APM Tool</p>
+  </div>
+  <div style="float: left; width: 33%">
+  ![](./assets/images/not-logging.png)
+  <p>A Logging Tool</p>
+  </div>
+</div>
 
 <!--s-->
 
-# Spans
+## Spans
 
 A _span_ is a unit of work done, i.e. a "thing"
 
 <!--s-->
 
-# Traces
+## Traces
 
 Traces are collections of _spans_ that describe an event within the life of a system.
 
 <!--s-->
 
-# A General Example
+## A General Example
 
 ![](./assets/span-vs-trace.png)
 
@@ -89,25 +96,25 @@ that happened. The entire duration of an event that A through E were a part of i
 
 <!--s-->
 
-# A More Realistic Example
+## A More Realistic Example
 
 ![](./assets/zipkin-example.png)
 
-# Other Terminology
+## Other Terminology
 
 - *Logs*: Key-value pairs that are associated with spans to help tell more of a story.
 - *Tags*: Attributes that are associated with spans that help describe them.
 
 <!--s-->
 
-# What's Jaeger
+## What's Jaeger
 
 ![](./assets/jaeger-logo.png)
 
 Jaeger is an implementation of OpenTracing from Uber that provides a system for collecting, reporting and
 exporting traces for distributed applications.
 
-# How Does Jaeger Work?
+## How Does Jaeger Work?
 
 ![](./assets/jaeger-architecture.png)
 
@@ -124,14 +131,14 @@ Note: Things to keep note of:
 
 <!--s-->
 
-# Demo
+## Demo
 
 ![](./assets/absolutely-nothing-will-go-wrong.png)
 
 <!--s-->
 
-# Questions?
+## Questions?
 
 <!--s-->
 
-# Thanks!
+## Thanks!
